@@ -49,14 +49,14 @@ class SliceAnimatedList extends StatefulWidget {
 
 class _SliceAnimatedListState extends State<SliceAnimatedList>
     with TickerProviderStateMixin {
-  // Constants for animations and layout
-  static const double _ITEM_WIDTH = 150.0;
-  static const double _ITEM_SPACING = 180.0;
-  static const double _MAX_SCALE = 1.0;
-  static const double _MIN_SCALE = 0.3;
-  static const double _SCALE_FACTOR = 0.2;
-  static const Duration _ANIMATION_DURATION = Duration(milliseconds: 300);
-  static const Duration _BUTTON_PULSE_DURATION = Duration(milliseconds: 1500);
+  // Constants for animations and layout - use lowerCamelCase for constants
+  static const double _itemWidth = 150.0;
+  static const double _itemSpacing = 180.0;
+  static const double _maxScale = 1.0;
+  static const double _minScale = 0.3;
+  static const double _scaleFactor = 0.2;
+  static const Duration _animationDuration = Duration(milliseconds: 300);
+  static const Duration _buttonPulseDuration = Duration(milliseconds: 1500);
 
   // Item data and state
   final List<int> _items = [];
@@ -88,7 +88,7 @@ class _SliceAnimatedListState extends State<SliceAnimatedList>
   void _initializeButtonAnimation() {
     _buttonAnimationController = AnimationController(
       vsync: this,
-      duration: _BUTTON_PULSE_DURATION,
+      duration: _buttonPulseDuration,
     )..repeat(reverse: true);
 
     _buttonAnimation = Tween<double>(begin: 1.0, end: 1.3).animate(
@@ -127,14 +127,15 @@ class _SliceAnimatedListState extends State<SliceAnimatedList>
   }
 
   /// Builds an individual card item for the carousel
-  Widget buildCardItem(
+  /// Changed to private method to follow conventions
+  Widget _buildCardItem(
     BuildContext context,
     int item,
     TextStyle? textStyle,
     double scale,
   ) {
     return SizedBox(
-      width: _ITEM_WIDTH,
+      width: _itemWidth,
       child: Card(
         color: Colors.primaries[item % Colors.primaries.length],
         child: Center(child: Text('Item $item', style: textStyle)),
@@ -145,31 +146,31 @@ class _SliceAnimatedListState extends State<SliceAnimatedList>
   /// Calculates the scale for an item based on its distance from the selected item
   double _calculateItemScale(int index) {
     final int distanceFromCenter = (index - _selectedIndex).abs();
-    return (_MAX_SCALE - (distanceFromCenter * _SCALE_FACTOR)).clamp(
-      _MIN_SCALE,
-      _MAX_SCALE,
+    return (_maxScale - (distanceFromCenter * _scaleFactor)).clamp(
+      _minScale,
+      _maxScale,
     );
   }
 
   /// Builds a carousel item with position and scale animations
   Widget _buildCarouselItem(BuildContext context, int index) {
     final double scale = _calculateItemScale(index);
-    final double offsetX = (index - _selectedIndex) * _ITEM_SPACING;
+    final double offsetX = (index - _selectedIndex) * _itemSpacing;
 
     TextStyle? textStyle = Theme.of(context).textTheme.headlineMedium;
     int item = _items[index];
 
     return AnimatedPositioned(
-      duration: _ANIMATION_DURATION,
+      duration: _animationDuration,
       curve: Curves.easeInOut,
-      left: MediaQuery.of(context).size.width / 2 - _ITEM_WIDTH / 2 + offsetX,
+      left: MediaQuery.of(context).size.width / 2 - _itemWidth / 2 + offsetX,
       child: GestureDetector(
         onTap: () => _selectItem(index),
         child: AnimatedScale(
           scale: scale,
-          duration: _ANIMATION_DURATION,
+          duration: _animationDuration,
           curve: Curves.easeInOut,
-          child: buildCardItem(context, item, textStyle, scale),
+          child: _buildCardItem(context, item, textStyle, scale),
         ),
       ),
     );
